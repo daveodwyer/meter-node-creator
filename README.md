@@ -1,5 +1,7 @@
 <p align="center"><img src="https://uploads-ssl.webflow.com/604d7b0daca4e5a5b86d64ef/60553b8f72e4ff447f121f59_logo.png" /></p>
 
+***NOTE***: While this script is under testing, your node will only show at ~@35% completion after install. This is to save on bandwidth before testing is complete. This notice will be removed once the full archive is added.
+
 ## About 
 
 This is an unofficial script that creates a [Meter Validator Node](https://docs.meter.io/full-node-and-validation/setup-full-node) in one command on Ubuntu/Debian linux environments. 
