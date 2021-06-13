@@ -7,8 +7,7 @@ function declareVars() {
   group_to_add=docker
 
   # this is the url for the blockchain archive
-  #blockchain_7zip_url="http://195.201.122.157/instance-tester.7z"
-  blockchain_7zip_url='http://validatormessenger.test/instance-tester.7z'
+  blockchain_7zip_url="http://195.201.122.157/instance-tester.7z"
 
   # if this flag is true we will download  the chain to bootstrap the node installation
   download_chain_flag='false'
