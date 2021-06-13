@@ -13,7 +13,7 @@ and the mirror where the data is hosted.
 
 ## Important: Manual Configuration Required
 You must manually open the ports on your server. The 
-[official Meter documentation]{https://docs.meter.io/full-node-and-validation/configure-the-full-node-to-validator-node) shows
+[official Meter documentation](https://docs.meter.io/full-node-and-validation/configure-the-full-node-to-validator-node) shows
 each port required but if you are using AWS, Paul's guide is useful for showing the exact process: (https://paolo-g.medium.com/step-by-step-guide-to-creating-a-node-in-meter-mainnet-4cdde1085fbb)
 
 ## Options
