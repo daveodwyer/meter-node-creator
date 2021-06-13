@@ -114,7 +114,7 @@ function bootstrapChain() {
   echo "~~~~~Now we will stop the container id:"
   docker kill $docker_container_id
 
-  echo "~~~~~While the blockchain is downloading, you could spend the time opening ports following point (e) of this guide here:  https://paolo-g.medium.com/step-by-step-guide-to-creating-a-node-in-meter-mainnet-4cdde1085fbb"
+  echo "~~~~~While the blockchain is downloading, you could spend the time opening ports following point 2(e) of this guide here:  https://paolo-g.medium.com/step-by-step-guide-to-creating-a-node-in-meter-mainnet-4cdde1085fbb"
 
   echo "~~~~~Lets download the blockchain data to speed up the bootstrap process"
   sudo wget -O instance.7z $blockchain_7zip_url -q --show-progress

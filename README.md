@@ -2,7 +2,7 @@
 
 ## About 
 
-This is an unofficial script that creates a Meter Validator Node in one command on Ubuntu/Debian linux environments. 
+This is an unofficial script that creates a [Meter Validator Node](https://docs.meter.io/full-node-and-validation/setup-full-node) in one command on Ubuntu/Debian linux environments. 
 The main aims of this project are to help novice people become validators and to speed up the node syncing process.
 
 When you set up a node manually, you must download the full blockchain before you can start validating. This can be a 
@@ -11,6 +11,10 @@ onto your node for you - which is a much faster process. Essentially instead of 
 fully sync, this script will have your node synced more than 90% in about 15 mins, depending on the speed of your server 
 and the mirror where the data is hosted. 
 
+## Important: Manual Configuration Required
+You must manually open the ports on your server. The 
+[official Meter documentation]{https://docs.meter.io/full-node-and-validation/configure-the-full-node-to-validator-node) shows
+each port required but if you are using AWS, Paul's guide is useful for showing the exact process: (https://paolo-g.medium.com/step-by-step-guide-to-creating-a-node-in-meter-mainnet-4cdde1085fbb)
 
 ## Options
 
