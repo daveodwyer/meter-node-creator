@@ -1,4 +1,4 @@
-<img style="display: block; margin:0 auto" src="https://uploads-ssl.webflow.com/604d7b0daca4e5a5b86d64ef/60553b8f72e4ff447f121f59_logo.png" />
+<p align="center"><img src="https://uploads-ssl.webflow.com/604d7b0daca4e5a5b86d64ef/60553b8f72e4ff447f121f59_logo.png" /></p>
 
 ## About 
 
@@ -12,7 +12,7 @@ fully sync, this script will have your node synced more than 90% in about 15 min
 and the mirror where the data is hosted. 
 
 
-### Options
+## Options
 
 Below are the possible options to use this tool<br>
 -d will download the chain before your node boots. It speeds up the process considerably<br>
