@@ -1,0 +1,295 @@
+#!/bin/bash
+
+# declare the variables required for this script
+function declareVars() {
+
+  # this group will be created for docker
+  group_to_add=docker
+
+  # this is the url for the blockchain archive
+  #blockchain_7zip_url="http://195.201.122.157/instance-tester.7z"
+  blockchain_7zip_url='http://validatormessenger.test/instance-tester.7z'
+
+  # if this flag is true we will download  the chain to bootstrap the node installation
+  download_chain_flag='false'
+
+  # of this flag is true we will force remove any related containers that the end user may have attempted to install
+  # themselves
+  force_removal_flag='false'
+
+  # if this glag is true we will download and install the watchtower container
+  watchtower_install_flag='false'
+
+}
+
+# outputAscii outputs the ascii text
+function outputAscii() {
+
+    echo "MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMWMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+0000000000000000|0xBE790A97479831B5Dfc7132e52f9810990417e37|000000000000000
+MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMWMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+MMMMMMMMMMMMMMMMMMMMMMMMMWNXKOkxdoollllooddxO0XNWMMMMMMMMMMMMMMMMMMMMMMMMMM
+MMMMMMMMMMMMMMMMMMMMMWXOdl:,'.................,;cox0XWMMMMMMMMMMMMMMMMMMMMM
+MMMMMMMMMMMMMMMMMWN0dc,.............................,cx0NMMMMMMMMMMMMMMMMMM
+MMMMMMMMMMMMMMMN0d:'.......';:lodxxkkkkkxxdol:,'.......':d0NMMMMMMMMMMMMMMM
+MMMMMMMMMMMMWNkc'......':ok0XWWMMMMMMMMMMMMMWWX0xo:'......'ckXMMMMMMMMMMMMM
+MMMMMMMMMMMNk:......,lxKNWMMMMMMMMMMMMMMMMMMMMMMMWN0xc'......:kNMMMMMMMMMMM
+MMMMMMMMMW0c......:xKWMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMN0o;.....'c0WMMMMMMMMM
+MMMMMMMMXd,.....:kXMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMWXx;.....,xNMMMMMMMM
+MMMMMMMKl.....,dXMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMWXd,....'oXMMMMMMM
+MMMMMMKc.....c0WMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMWO:.....lXMMMMMM
+MMMMMXl.....lKMMMMMMMMMMMMMMMMNKXMMMMMMMMMMMMMMMWXKNMMMMMMMMWKc....;xNMMMMM
+MMMMNd'....lXMMMMMMMMMMMMMMWKx:c0MMMMMMMMMMMWN0xl,c0MMMMMMMMMWXxdxOKNWMMWWW
+MMMWO,....:0MMMMMMMMMMMMMNOo,..cKMMMMMMMMWXOo:'...lXMMMMMMMMMMMMMWWXKOO0KNW
+MMMXl....'xWMMMMMMMMMMWXxc'....oNMMMWWN0xc,.......oNMMMMMMMWNX0kdolodkKNWMM
+MMM0;....cKMMMMMMMMMN0o;......'kWNKkoc;'.........'xWMWNKOxol:,',cdOXWMWWMMM
+MMWk,....oNMMMMMMWXkc'........'ldc,........'.....'ldoc;'...';okKWMWX0do0MMM
+MMWx'....xWMMMMN0o;....................':dkl'...........;lx0NWMMW0l;'.'xWMM
+MMWx'..'lKMMWXkc'.....,:;..........;loxKNWKc........,:dOXWMMMMMMNo....'xWMM
+MMMk;;d0WMWKd;....,cdOXKc......':oOXWMMMMWx'....';okKNMMMMMMMMMMXl....'kMMM
+MMMX0XWWNOl,..,cdOXWMMM0;...,cx0NWMMMMMMMKc..,cx0NWMMMMMMMMMMMMMK:....;0MMM
+MMMMMWKx:,;cdOXWMMMMMMWx;;okXWMMMMMMMMMMWOodOXWMMMMMMMMMMMMMMMMWk'....oNMMM
+MMMNOdcldOXWMMMMMMMMMMWK0NWMMMMMMMMMMMMMWNWMMMMMMMMMMMMMMMMMMMM0:....,OWMMM
+WN0kkOXWMWNKNMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMKc.....oNMMMM
+NXXWMMWKxl;,lXMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMKl.....cKMMMMM
+MMMMMMXo.....c0WMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMW0c.....cKMMMMMM
+MMMMMMWKl.....,dXWMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMXx;.....lKMMMMMMM
+MMMMMMMMXd,.....:kNMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMNk:.....,dXMMMMMMMM
+MMMMMMMMMW0c......:xXWMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMWKx:......cOWMMMMMMMMM
+MMMMMMMMMMMNk:......,okXWMMMMMMMMMMMMMMMMMMMMMMMMMWXkl,......:kNMMMMMMMMMMM
+MMMMMMMMMMMMMNkc'......,cdkKNWMMMMMMMMMMMMMMMWNKOdc,......'ckXWMMMMMMMMMMMM
+MMMMMMMMMMMMMMMN0o;........';codxkkOOOOOOkxdoc;'........;o0NMMMMMMMMMMMMMMM
+MMMMMMMMMMMMMMMMMWXOd:'.............................,cdOXWMMMMMMMMMMMMMMMMM
+MMMMMMMMMMMMMMMMMMMMMNKkdc;,..................',:ldOXWMMMMMMMMMMMMMMMMMMMMM
+MMMMMMMMMMMMMMMMMMMMMMMMMWNK0Oxdooolooolooodxk0XNWMMMMMMMMMMMMMMMMMMMMMMMMM
+MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+0000000000000000|0xBE790A97479831B5Dfc7132e52f9810990417e37|000000000000000"
+
+}
+
+# this function outputs the help text / manual for the -h output
+function outputHelpText() {
+
+  echo "Below are the possible options to use this tool."
+  echo "-d will download the chain before your node boots. It speeds up the process considerably."
+  echo "-f will force remove any existing docker images if you have attempted to install/run them before."
+  echo "-w will download and install watchtower."
+  echo "-h will show this prompt."
+  echo -e "\nPlease note that the options can be chained ie -dfw will chain the above options."
+
+  exit
+
+}
+
+# outputs the exit message
+function exitMessage() {
+
+  outputAscii
+
+  echo "~~~~~ Don't forget to open your ports!!"
+  if [ "$watchtower_install_flag" == 'false' ]; then
+      echo "~~~~~ You opted not to install Watchtower. Please note this means that you must install updates yourself. Watchtower is advised."
+  fi
+  echo "~~~~~ Please consider making a MTR/MTRG donation if this script helped you [ 0xBE790A97479831B5Dfc7132e52f9810990417e37 ]. It would really help with the hosting costs. Thanks!"
+}
+
+# downloads the 7z archive that contains the blockchain data
+function bootstrapChain() {
+
+  echo "~~~~~Give the container a minute to boot up... Please wait for 60 seconds"
+  sleep 1m
+
+  echo "Lets see if the folders have been created"
+  paths=($(find . -name "instance-*"))
+
+  printf "%s\n" "${paths[@]}"
+  node_dir=$paths
+
+  cd $node_dir
+
+  echo "~~~~~Changed directory to $PWD"
+
+  # get the container id
+  docker_container_id="$(< /tmp/meter_node_cont_id.txt)"
+
+  echo "~~~~~Now we will stop the container id:"
+  docker kill $docker_container_id
+
+  echo "~~~~~While the blockchain is downloading, you could spend the time opening ports following point (e) of this guide here:  https://paolo-g.medium.com/step-by-step-guide-to-creating-a-node-in-meter-mainnet-4cdde1085fbb"
+
+  echo "~~~~~Lets download the blockchain data to speed up the bootstrap process"
+  sudo wget -O instance.7z $blockchain_7zip_url -q --show-progress
+
+  echo "~~~~~Please wait - now unpacking the data"
+
+  sudo 7z x instance.7z -aoa
+
+  docker start meter_main
+
+  rm /tmp/meter_node_cont_id.txt
+}
+
+# the main function
+function main() {
+  local flag
+
+  # output the ASCII art
+  outputAscii
+
+  declareVars
+
+  # this string contains the text that will output to the end user before they confirm their choices
+  message_for_output=""
+  while getopts 'dfwh' flag; do
+    case "${flag}" in
+      h)
+        outputHelpText
+        ;;
+
+      d)
+        # lets make sure that the mirror is actually available before setting the flag
+        if wget --spider $blockchain_7zip_url 2>/dev/null; then
+          # it looks like the mirror is UP
+          message_for_output="${message_for_output} ~opted to download the blockchain directly to speed up the syncing process\n"
+          download_chain_flag='true'
+        else
+          # looks like like the mirror is DOWN
+          message_for_output="${message_for_output} ~IMPORTANT:: You opted to download the blockchain directly, but sadly it appears the mirror is down. The script will still setup your node for you but it will have to sync as normal.\n"
+          download_chain_flag='false'
+        fi
+        ;;
+
+      f)
+        message_for_output="${message_for_output} ~opted to force remove any container that has already been installed with the name meter_main\n"
+        force_removal_flag='true'
+      ;;
+
+      w) message_for_output="${message_for_output} ~opted to install watchtower that will manage updates for you\n"
+        watchtower_install_flag='true'
+      ;;
+    esac
+  done
+
+  echo "@This script is provided as is without any warranty."
+  echo "@You are welcome to view the source of this script before executing."
+  echo "@Feel free to contribute"
+  echo "@If you have any interest in providing a mirror, please get in touch"
+  echo "@Twitter - https://twitter.com/DaveDeWire "
+
+  echo "@You may need to enter your sudo password during execution."
+  echo "@Please reach out in the official Telegram group if you have any issues"
+  echo "https://t.me/Meter_IO"
+
+  echo "@Please confirm; you have:"
+
+  echo -e "${message_for_output}"
+
+  read -n 1 -p "Enter Y to continue:" mainmenuinput
+  if [ "$mainmenuinput" = "y" ] || [ "$mainmenuinput" = "Y" ]; then
+      echo -e "\n~BEGINNING"
+  else
+    echo -e "\nDid not confirm. Exiting"
+    exit
+  fi
+
+  # if -f is passed in, we will force remove
+  if [ "$force_removal_flag" == 'true' ]; then
+    # remove container id file if exists
+    if [ -f "/tmp/meter_node_cont_id.txt" ]; then
+      echo "~~~~~removing container id file";
+      rm /tmp/meter_node_cont_id.txt
+    fi
+
+    if [ "$watchtower_install_flag" == 'true' ]; then
+      echo "~~~~~Attempting to remove any previous references to Watchtower"
+      docker container rm watchtower -f
+    fi
+
+    # remove the container
+    docker container rm meter_main -f
+  fi
+
+  echo "~~~~~Lets create the meter_main_data folder"
+  cd ~
+  mkdir -p meter_main_data
+  cd meter_main_data
+
+  #set METER_MAIN_DATA_PATH variable
+  source <(grep -m 1 "METER_MAIN_DATA_PATH" ~/.bashrc )
+
+  #check if variable exists
+  if [ -z "$METER_MAIN_DATA_PATH" ]; then
+      echo "Variable doesnt exist, setting in bashrc"
+      echo export "METER_MAIN_DATA_PATH=$PWD" >> ~/.bashrc
+      source <(grep -m 1 "METER_MAIN_DATA_PATH" ~/.bashrc )
+  fi
+
+  #groups
+  if grep -q $group_to_add /etc/group
+  then
+    echo "~~~~~group exists already. Not creating"
+  else
+    echo "~~~~~Group does not exist. Creating Now."
+    sudo groupadd $group_to_add
+    echo "~~~~~Group $group_to_add created"
+  fi
+
+  if groups $USER | grep -q $group_to_add
+  then
+    echo "~~~~~{$USER} is in group already. No need to re-add"
+  else
+    echo "~~~~~{$USER} Not in group yet adding now"
+    sudo usermod -aG $group_to_add $USER
+    echo "~~~~~{$USER} added to group {$group_to_add}"
+    echo "~When a user is added to a new group, the user must logout and log back in"
+    echo "~Because this script is designed to be run directly from GitHub, the safest"
+    echo "~way to do that is to restart the machine. When the machine reboots simply rerun the same command."
+    echo "~Are you happy to restart now??"
+    read -n 1 -p "Enter Y to continue:" restartconfirmation
+    if [ "$restartconfirmation" = "y" ] || [ "$restartconfirmation" = "Y" ]; then
+        echo -e "\n~~~~~Restarting now"
+        sudo reboot now
+    else
+      echo -e "\n~~~~~Did not confirm. You will get unexpected results if you re-run without reloading your groups correctly! Exiting"
+      exit
+    fi
+
+  fi
+
+  echo "~~~~~Path variable set to:"
+  echo $METER_MAIN_DATA_PATH
+
+  cd ~
+  echo "~~~~~Lets install docker.io and 7zip"
+  sudo apt update
+  sudo apt install docker.io p7zip-full -y
+
+  echo "~~~~~Lets create the meter_main_data folder"
+  mkdir -p meter_main_data
+  cd meter_main_data
+
+  echo "~~~~~We will use $PWD for the METER_MAIN_PATH"
+
+  if [ "$download_chain_flag" == 'true' ]; then
+    docker run --cidfile /tmp/meter_node_cont_id.txt --network host --name meter_main --restart always -e NETWORK="main" -v $METER_MAIN_DATA_PATH:/pos -d meterio/mainnet:latest
+    bootstrapChain
+  else
+    docker run --network host --name meter_main --restart always -e NETWORK="main" -v $METER_MAIN_DATA_PATH:/pos -d meterio/mainnet:latest
+  fi
+
+  if [ "$watchtower_install_flag" == 'true' ]; then
+    docker run -d --name watchtower --restart always -v /var/run/docker.sock:/var/run/docker.sock containrrr/watchtower --include-stopped --revive-stopped --enable-lifecycle-hooks --interval 10 --cleanup meter_main
+  fi
+
+  #output the private key if we can see it
+  if [ -f "$PWD/public.key" ]; then
+    echo "~~~~~Here is your public key. You can copy it from here, but make sure when you are setting up the node in the
+    wallet that you do not have any whitespaces between the strings - it should all be on one line."
+    cat public.key
+  fi
+
+  exitMessage
+}
+
+# trigger the main function
+main "$@"
