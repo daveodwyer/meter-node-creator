@@ -192,38 +192,6 @@ function main() {
     exit
   fi
 
-  # if -f is passed in, we will force remove
-  if [ "$force_removal_flag" == 'true' ]; then
-    # remove container id file if exists
-    if [ -f "/tmp/meter_node_cont_id.txt" ]; then
-      echo "~~~~~removing container id file";
-      rm /tmp/meter_node_cont_id.txt
-    fi
-
-    if [ "$watchtower_install_flag" == 'true' ]; then
-      echo "~~~~~Attempting to remove any previous references to Watchtower"
-      docker container rm watchtower -f
-    fi
-
-    # remove the container
-    docker container rm meter_main -f
-  fi
-
-  echo "~~~~~Lets create the meter_main_data folder"
-  cd ~
-  mkdir -p meter_main_data
-  cd meter_main_data
-
-  #set METER_MAIN_DATA_PATH variable
-  source <(grep -m 1 "METER_MAIN_DATA_PATH" ~/.bashrc )
-
-  #check if variable exists
-  if [ -z "$METER_MAIN_DATA_PATH" ]; then
-      echo "Variable doesnt exist, setting in bashrc"
-      echo export "METER_MAIN_DATA_PATH=$PWD" >> ~/.bashrc
-      source <(grep -m 1 "METER_MAIN_DATA_PATH" ~/.bashrc )
-  fi
-
   #groups
   if grep -q $group_to_add /etc/group
   then
@@ -256,6 +224,21 @@ function main() {
 
   fi
 
+  echo "~~~~~Lets create the meter_main_data folder"
+  cd ~
+  mkdir -p meter_main_data
+  cd meter_main_data
+
+  #set METER_MAIN_DATA_PATH variable
+  source <(grep -m 1 "METER_MAIN_DATA_PATH" ~/.bashrc )
+
+  #check if variable exists
+  if [ -z "$METER_MAIN_DATA_PATH" ]; then
+      echo "Variable doesnt exist, setting in bashrc"
+      echo export "METER_MAIN_DATA_PATH=$PWD" >> ~/.bashrc
+      source <(grep -m 1 "METER_MAIN_DATA_PATH" ~/.bashrc )
+  fi
+
   echo "~~~~~Path variable set to:"
   echo $METER_MAIN_DATA_PATH
 
@@ -263,6 +246,23 @@ function main() {
   echo "~~~~~Lets install docker.io and 7zip"
   sudo apt update
   sudo apt install docker.io p7zip-full -y
+
+  # if -f is passed in, we will force remove
+  if [ "$force_removal_flag" == 'true' ]; then
+    # remove container id file if exists
+    if [ -f "/tmp/meter_node_cont_id.txt" ]; then
+      echo "~~~~~removing container id file";
+      rm /tmp/meter_node_cont_id.txt
+    fi
+
+    if [ "$watchtower_install_flag" == 'true' ]; then
+      echo "~~~~~Attempting to remove any previous references to Watchtower"
+      docker container rm watchtower -f
+    fi
+
+    # remove the container
+    docker container rm meter_main -f
+  fi
 
   echo "~~~~~Lets create the meter_main_data folder"
   mkdir -p meter_main_data
