@@ -7,17 +7,21 @@ function declareVars() {
   group_to_add=docker
 
   # this is the url for the blockchain archive
-  blockchain_7zip_url="http://195.201.122.157/instance-tester.7z"
+  blockchain_7zip_url="https://bot.metervalidatorbot.com/instance.7z"
 
   # if this flag is true we will download  the chain to bootstrap the node installation
   download_chain_flag='false'
 
-  # of this flag is true we will force remove any related containers that the end user may have attempted to install
+  # if this flag is true we will force remove any related containers that the end user may have attempted to install
   # themselves
   force_removal_flag='false'
 
-  # if this glag is true we will download and install the watchtower container
+  # if this flag is true we will download and install the watchtower container
   watchtower_install_flag='false'
+
+  # yes and no options accepted at keyboard prompts
+  yesOption="y"
+  noOption="n"
 
 }
 
@@ -176,15 +180,20 @@ function main() {
   echo "@Twitter - https://twitter.com/DaveDeWire "
 
   echo "@You may need to enter your sudo password during execution."
-  echo "@Please reach out in the official Telegram group if you have any issues"
+  echo "@Please reach out in the Meter Validators Telegram group if you have any issues"
   echo "https://t.me/Meter_IO"
 
   echo "@Please confirm; you have:"
 
   echo -e "${message_for_output}"
 
-  read -n 1 -p "Enter Y to continue:" mainmenuinput
-  if [ "$mainmenuinput" = "y" ] || [ "$mainmenuinput" = "Y" ]; then
+  mainmenuinput=""
+  echo Enter Y to continue:
+  while [[ ( $(echo ${mainmenuinput,,} | xargs) != ${yesOption} && $(echo ${mainmenuinput,,} | xargs) != ${noOption} ) ]]; do
+    read -n 1 mainmenuinput
+  done
+
+  if [ ${mainmenuinput,,} = ${yesOption} ]; then
       echo -e "\n~BEGINNING"
   else
     echo -e "\nDid not confirm. Exiting"
@@ -212,10 +221,16 @@ function main() {
     echo "~Because this script is designed to be run directly from GitHub, the safest"
     echo "~way to do that is to restart the machine. When the machine reboots simply rerun the same command."
     echo "~Are you happy to restart now??"
-    read -n 1 -p "Enter Y to continue:" restartconfirmation
-    if [ "$restartconfirmation" = "y" ] || [ "$restartconfirmation" = "Y" ]; then
-        echo -e "\n~~~~~Restarting now"
-        sudo reboot now
+    restartconfirmation=""
+    echo Enter Y to continue:
+    while [[ ( $(echo ${restartconfirmation,,} | xargs) != ${yesOption} && $(echo ${restartconfirmation,,} | xargs) != ${noOption} ) ]]; do
+      read -n 1 restartconfirmation
+    done
+
+    if [ ${restartconfirmation,,} = ${yesOption} ]; then
+      echo -e "\n~~~~~Restarting now"
+      sudo reboot now
+      exit
     else
       echo -e "\n~~~~~Did not confirm. You will get unexpected results if you re-run without reloading your groups correctly! Exiting"
       exit
