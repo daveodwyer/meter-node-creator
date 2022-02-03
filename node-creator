@@ -23,6 +23,8 @@ function declareVars() {
   yesOption="y"
   noOption="n"
 
+  installDirectory="$HOME/meter_main_data"
+
 }
 
 # outputAscii outputs the ascii text
@@ -143,7 +145,7 @@ function main() {
 
   # this string contains the text that will output to the end user before they confirm their choices
   message_for_output=""
-  while getopts 'dfwh' flag; do
+  while getopts 'dfwhi:' flag; do
     case "${flag}" in
       h)
         outputHelpText
@@ -169,6 +171,10 @@ function main() {
 
       w) message_for_output="${message_for_output} ~opted to install watchtower that will manage updates for you\n"
         watchtower_install_flag='true'
+      ;;
+
+      i)
+        installDirectory=${OPTARG}
       ;;
     esac
   done
@@ -238,25 +244,45 @@ function main() {
 
   fi
 
-  echo "~~~~~Lets create the meter_main_data folder"
-  cd ~
-  mkdir -p meter_main_data
-  cd meter_main_data
+  echo "~~~~~Creating the install folder (if required)"
+  mkdir -p "$installDirectory"
+
+  cd "$installDirectory"
+
+  echo "~~~~~Setting the METER_MAIN_DATA_PATH variable in ~/.bashrc"
+
+  #unset in case it has been set previously
+  unset METER_MAIN_DATA_PATH
 
   #set METER_MAIN_DATA_PATH variable
   source <(grep -m 1 "METER_MAIN_DATA_PATH" ~/.bashrc )
 
   #check if variable exists
-  if [ -z "$METER_MAIN_DATA_PATH" ]; then
-      echo "Variable doesnt exist, setting in bashrc"
-      echo export "METER_MAIN_DATA_PATH=$PWD" >> ~/.bashrc
-      source <(grep -m 1 "METER_MAIN_DATA_PATH" ~/.bashrc )
+  if [ ! -d "$installDirectory" ]; then
+    echo -e "~~~~~ERROR~~~~~"
+    echo -e "~~~~~The path provided $installDirectory is not valid or could not be created"
+    echo -e "~~~~~Please check permissions or choose a different directory"
+    exit
+  elif [ -z "$METER_MAIN_DATA_PATH" ]; then
+    echo "$METER_MAIN_DATA_PATH Variable doesnt exist, setting in bashrc"
+    echo export "METER_MAIN_DATA_PATH=$PWD" >> ~/.bashrc
+    source <(grep -m 1 "METER_MAIN_DATA_PATH" ~/.bashrc )
+  elif [ "$METER_MAIN_DATA_PATH" != "$PWD" ]; then
+
+    echo -e "~~~~~ERROR~~~~~"
+    echo -e "$PWD"
+    echo -e "~~~~~The METER_MAIN_DATA_PATH variable already exists in ~/.bashrc - but contains the wrong value"
+    echo -e "~~~~~This variable is used to store the location of the data that is required to run a node so that it can be filtered through to docker."
+    echo -e "~~~~~Please edit ~/.bashrc with a text editor and remove the line:"
+    echo -e "export METER_MAIN_DATA_PATH=$METER_MAIN_DATA_PATH"
+    unset METER_MAIN_DATA_PATH
+    exit
   fi
+
 
   echo "~~~~~Path variable set to:"
   echo $METER_MAIN_DATA_PATH
 
-  cd ~
   echo "~~~~~Lets install docker.io and 7zip"
   sudo apt update
   sudo apt install sudo docker.io p7zip-full -y
@@ -278,20 +304,16 @@ function main() {
     docker container rm meter_main -f
   fi
 
-  echo "~~~~~Lets create the meter_main_data folder"
-  mkdir -p meter_main_data
-  cd meter_main_data
-
-  echo "~~~~~We will use $PWD for the METER_MAIN_PATH"
-
   if [ "$download_chain_flag" == 'true' ]; then
     docker run --cidfile /tmp/meter_node_cont_id.txt --network host --name meter_main --restart always -e NETWORK="main" -v $METER_MAIN_DATA_PATH:/pos -d meterio/mainnet:latest
     bootstrapChain
   else
+    echo -e "~~~~~Starting meter_main docker container"
     docker run --network host --name meter_main --restart always -e NETWORK="main" -v $METER_MAIN_DATA_PATH:/pos -d meterio/mainnet:latest
   fi
 
   if [ "$watchtower_install_flag" == 'true' ]; then
+    echo -e "~~~~~Installing Watchtower"
     docker run -d --name watchtower --restart always -v /var/run/docker.sock:/var/run/docker.sock containrrr/watchtower --include-stopped --revive-stopped --enable-lifecycle-hooks --interval 10 --cleanup meter_main
   fi
 
