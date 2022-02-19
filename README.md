@@ -15,11 +15,11 @@ each port required but if you are using AWS, [Paul's guide](https://paolo-g.medi
 ## Options
 
 Below are the possible options to use this tool<br>
--d will download the chain before your node boots. It speeds up the process considerably<br>
--f will force remove any existing docker images if you have attempted to install/run them before<br>
--w will download and install watchtower<br>
--h will show this prompt<br>
--i /home/user/my-custom-folder allows you to use a different install directory
+`-d` will download and install the blockchain archive<br>
+`-f` will force remove any existing docker images if you have attempted to install/run them before<br>
+`-w` will download and install watchtower<br>
+`-h` will show this prompt<br>
+`-i /home/user/my-custom-folder` allows you to use a different install directory
 Please note that the options can be chained ie -dfw will chain the above options<br>
 
 ## Usage
