@@ -2,14 +2,10 @@
 
 ## About 
 
-This is an unofficial script that creates a [Meter Validator Node](https://docs.meter.io/full-node-and-validation/setup-full-node) in one command on Ubuntu/Debian linux environments. 
-The main aims of this project are to help novice people become validators and to speed up the node syncing process.
+This is an unofficial script that creates a [Meter Validator Node](https://docs.meter.io/full-node-and-validation/setup-full-node) in one command on Ubuntu/Debian linux environments.
+The main aims of this project are to reduce support queries and allow anyone, regardless of their experience, become validators.
 
-When you set up a node manually, you must download the full blockchain before you can start validating. This can be a 
-very slow process, taking multiple hours to download. This script will download this data from a server and unpack it 
-onto your node for you - which is a much faster process. Essentially instead of waiting around 10 hours for the node to 
-fully sync, this script will have your node synced more than 90% in about 15 mins, depending on the speed of your server 
-and the mirror where the data is hosted. 
+Without the blockchain archive that is used in this script, a freshly installed node downloads all of the blockchain data from each of the other nodes on the chain. This is an extremelely slow process that can take over a day to complete. The blockchain archive contains the bulk of the blockchain data to run a node. After it is unpacked, only a small percentage (~5%) of the blockchain is downloaded via the slower node to node sync.
 
 ## Important: Manual Configuration Required
 You must manually open the ports on your server. The 
@@ -23,6 +19,7 @@ Below are the possible options to use this tool<br>
 -f will force remove any existing docker images if you have attempted to install/run them before<br>
 -w will download and install watchtower<br>
 -h will show this prompt<br>
+-i /home/user/my-custom-folder allows you to use a different install directory
 Please note that the options can be chained ie -dfw will chain the above options<br>
 
 ## Usage
