@@ -129,6 +129,10 @@ function bootstrapChain() {
 
   sudo 7z x instance.7z -aoa
 
+  echo "~~~~~Deleting the 7z archive now that is is unpacked"
+
+  sudo rm instance.7z
+
   docker start meter_main
 
   rm /tmp/meter_node_cont_id.txt
