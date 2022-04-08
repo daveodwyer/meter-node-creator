@@ -20,10 +20,16 @@ function declareVars() {
   watchtower_install_flag='false'
 
   # yes and no options accepted at keyboard prompts
-  yesOption="y"
-  noOption="n"
+  yes_option="y"
+  no_option="n"
 
-  installDirectory="$HOME/meter_main_data"
+  install_directory="$HOME/meter_main_data"
+
+  # mega installer package - blank by default
+  mega_installer_package=''
+
+  # by default we will remove the mega application after the script has finished executing
+  remove_mega_after_archive_download='true'
 
 }
 
@@ -72,6 +78,14 @@ MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
 
 }
 
+
+# this function will return true if the application passed into it exists on the system
+function isInstalled()
+{
+  command -v "$1" >/dev/null 2>&1
+}
+
+
 # this function outputs the help text / manual for the -h output
 function outputHelpText() {
 
@@ -98,6 +112,56 @@ function exitMessage() {
   echo "~~~~~ Please consider making a MTR/MTRG donation if this script helped you [ 0xBE790A97479831B5Dfc7132e52f9810990417e37 ]. It would really help with the hosting costs. Thanks!"
 }
 
+installMegaIfRequired() {
+
+  if isInstalled mega-version; then
+
+    # we dont want to remove mega if it already existed before executing this script
+    remove_mega_after_archive_download='false'
+
+    return 1
+
+  elif test -r "/etc/os-release"; then
+
+    # source the os-release file
+	  . /etc/os-release
+
+		# todo - change this to look at VERSION_CODENAME instead - which is the same across Ubuntu and Debian
+		# todo - allow the end user to pass in a defined debian package URL to use
+
+    if [ "$VERSION_CODENAME" == "bionic" ]; then
+      # 18.04
+      deb="https://mega.nz/linux/MEGAsync/xUbuntu_18.04/amd64/megacmd_1.4.0-6.1_amd64.deb"
+    elif [ "$VERSION_CODENAME" == "focal" ]; then
+      # 20.04
+      deb="https://mega.nz/linux/MEGAsync/xUbuntu_20.04/amd64/megacmd_1.4.0-5.1_amd64.deb"
+    elif [ "$VERSION_CODENAME" == "bullseye" ]; then
+      deb="https://mega.nz/linux/MEGAsync/Debian_11/amd64/megacmd_1.4.0-3.1_amd64.deb"
+    elif [ "$VERSION_CODENAME" == "buster" ]; then
+      deb="https://mega.nz/linux/MEGAsync/Debian_10.0/amd64/megacmd_1.4.0-3.1_amd64.deb"
+    else
+      return 0
+    fi
+
+	else
+	  return 0
+	fi
+
+  # download the package
+	wget -O ~/mega_debian_package.deb $deb
+
+	# attempt to install the package
+	# DEBIAN_FRONTEND=noninteractive will accept the defaults for any menu prompts
+	sudo DEBIAN_FRONTEND=noninteractive apt install ~/mega_debian_package.deb -y
+
+	# remove the installer
+	rm ~/mega_debian_package.deb
+
+	# required for Mega to start correctly
+	sudo ldconfig
+
+}
+
 # downloads the 7z archive that contains the blockchain data
 function bootstrapChain() {
 
@@ -122,8 +186,54 @@ function bootstrapChain() {
 
   echo "~~~~~While the blockchain is downloading, you could spend the time opening ports following point 2(e) of this guide here:  https://paolo-g.medium.com/step-by-step-guide-to-creating-a-node-in-meter-mainnet-4cdde1085fbb"
 
-  echo "~~~~~Lets download the blockchain data to speed up the bootstrap process"
-  sudo wget -O instance.7z $blockchain_7zip_url -q --show-progress
+  echo "~~~~~Lets download the blockchain data to bootstrap the syncing process"
+
+  # assume we won't use mega for the download
+  use_mega_link_for_download='false'
+
+  # install the Mega application - it will be removed if not already installed on the system after the archive is downloaded
+  installMegaIfRequired
+
+  # check if Mega is usable
+  if isInstalled mega-version; then
+
+    # get the url for the latest archive
+    megaLink=$(wget -q -O - https://archive.metervalidatorbot.com/archive-mega-link)
+
+    # make sure we got a response value
+    if [ megaLink ]; then
+
+      echo "Mega Link fetched successfully: [$megaLink]"
+      echo "We will use Mega to download the mirror - which is much faster"
+      use_mega_link_for_download='true'
+    fi
+  fi
+
+  # check if the we can use Mega (if any of the vars below are empty)
+  if [[ -z $use_mega_link_for_download || -z $megaLink ]]; then
+
+    echo "Issue occurred trying to use Mega. Falling back to server mirror for download:"
+
+    # fall back to the slower mirror
+    sudo wget -O instance.7z $blockchain_7zip_url -q --show-progress
+
+  else
+
+    echo "Mega application may take a second to start before the download starts...."
+    echo "Please wait..."
+
+    # trigger the download
+    sudo mega-get $megaLink instance.7z
+
+    # remove the mega application if it was installed by the script
+    # we do this here instead of above the isInstalled check because the installation may have been attempted, but failed.
+    if $remove_mega_after_archive_download; then
+      echo "Removing the Mega application now that the archive is downloaded..."
+      sudo apt remove -f -y megacmd
+    fi
+
+  fi
+
 
   echo "~~~~~Please wait - now unpacking the data"
 
@@ -149,7 +259,7 @@ function main() {
 
   # this string contains the text that will output to the end user before they confirm their choices
   message_for_output=""
-  while getopts 'dfwhi:' flag; do
+  while getopts 'dfwhi:m:' flag; do
     case "${flag}" in
       h)
         outputHelpText
@@ -178,7 +288,12 @@ function main() {
       ;;
 
       i)
-        installDirectory=${OPTARG}
+        install_directory=${OPTARG}
+      ;;
+
+      m)
+        message_for_output="${message_for_output} ~requested to use ${OPTARG} as the mega installer package\n"
+        mega_installer_package=${OPTARG}
       ;;
     esac
   done
@@ -199,11 +314,11 @@ function main() {
 
   mainmenuinput=""
   echo Enter Y to continue:
-  while [[ ( $(echo ${mainmenuinput,,} | xargs) != ${yesOption} && $(echo ${mainmenuinput,,} | xargs) != ${noOption} ) ]]; do
+  while [[ ( $(echo ${mainmenuinput,,} | xargs) != ${yes_option} && $(echo ${mainmenuinput,,} | xargs) != ${no_option} ) ]]; do
     read -n 1 mainmenuinput
   done
 
-  if [ ${mainmenuinput,,} = ${yesOption} ]; then
+  if [ ${mainmenuinput,,} = ${yes_option} ]; then
       echo -e "\n~BEGINNING"
   else
     echo -e "\nDid not confirm. Exiting"
@@ -233,11 +348,11 @@ function main() {
     echo "~Are you happy to restart now??"
     restartconfirmation=""
     echo Enter Y to continue:
-    while [[ ( $(echo ${restartconfirmation,,} | xargs) != ${yesOption} && $(echo ${restartconfirmation,,} | xargs) != ${noOption} ) ]]; do
+    while [[ ( $(echo ${restartconfirmation,,} | xargs) != ${yes_option} && $(echo ${restartconfirmation,,} | xargs) != ${no_option} ) ]]; do
       read -n 1 restartconfirmation
     done
 
-    if [ ${restartconfirmation,,} = ${yesOption} ]; then
+    if [ ${restartconfirmation,,} = ${yes_option} ]; then
       echo -e "\n~~~~~Restarting now"
       sudo reboot now
       exit
@@ -249,9 +364,9 @@ function main() {
   fi
 
   echo "~~~~~Creating the install folder (if required)"
-  mkdir -p "$installDirectory"
+  mkdir -p "$install_directory"
 
-  cd "$installDirectory"
+  cd "$install_directory"
 
   echo "~~~~~Setting the METER_MAIN_DATA_PATH variable in ~/.bashrc"
 
@@ -262,9 +377,9 @@ function main() {
   source <(grep -m 1 "METER_MAIN_DATA_PATH" ~/.bashrc )
 
   #check if variable exists
-  if [ ! -d "$installDirectory" ]; then
+  if [ ! -d "$install_directory" ]; then
     echo -e "~~~~~ERROR~~~~~"
-    echo -e "~~~~~The path provided $installDirectory is not valid or could not be created"
+    echo -e "~~~~~The path provided $install_directory is not valid or could not be created"
     echo -e "~~~~~Please check permissions or choose a different directory"
     exit
   elif [ -z "$METER_MAIN_DATA_PATH" ]; then
