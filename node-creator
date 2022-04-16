@@ -225,6 +225,23 @@ function bootstrapChain() {
     # trigger the download
     sudo mega-get $megaLink instance.7z
 
+    # catch any errors that may have occurred during the download and re-attempt to download if required.
+    if [[ $? == 12 ]]; then
+
+      echo "It looks like your session may have timed out whilst trying to download the archive previously"
+      echo "The download progress will output below every 10 seconds."
+      echo "Please wait..."
+
+      OUTPUT=$(mega-transfers --only-downloads)
+      while [[ $OUTPUT = *PROGRESS* ]]
+      do
+        sleep 5s
+        OUTPUT=$(mega-transfers --only-downloads)
+        echo "${OUTPUT}"
+      done
+
+    fi
+
     # remove the mega application if it was installed by the script
     # we do this here instead of above the isInstalled check because the installation may have been attempted, but failed.
     if $remove_mega_after_archive_download; then
