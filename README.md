@@ -20,6 +20,7 @@ Below are the possible options to use this tool<br>
 `-w` will download and install watchtower<br>
 `-h` will show this prompt<br>
 `-i /home/user/my-custom-folder` allows you to use a different install directory
+
 Please note that the options can be chained ie -dfw will chain the above options<br>
 
 ## Usage
@@ -29,7 +30,7 @@ The preferred method to execute this shell script is to call it directly from Gi
 bash <(wget -q -O - https://raw.githubusercontent.com/daveodwyer/meter-node-creator/production/node-creator) -dfw
 ```
 
-If you do not want to download the blockchain, you may remove the d flag.
+If you do not want to download the blockchain archive, you may remove the d flag.
 
 You may pass flags linked or seperated
 -d -f -w is the same as -dfw
