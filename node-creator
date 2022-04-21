@@ -37,7 +37,7 @@ function declareVars() {
 function outputAscii() {
 
     echo "MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMWMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
-0000000000000000|0xBE790A97479831B5Dfc7132e52f9810990417e37|000000000000000
+0000000000000000|0xffbeddcaa68dc953ee4f3d040ab83cb0ac65498b|000000000000000
 MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMWMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
 MMMMMMMMMMMMMMMMMMMMMMMMMWNXKOkxdoollllooddxO0XNWMMMMMMMMMMMMMMMMMMMMMMMMMM
 MMMMMMMMMMMMMMMMMMMMMWXOdl:,'.................,;cox0XWMMMMMMMMMMMMMMMMMMMMM
@@ -74,7 +74,7 @@ MMMMMMMMMMMMMMMMMWXOd:'.............................,cdOXWMMMMMMMMMMMMMMMMM
 MMMMMMMMMMMMMMMMMMMMMNKkdc;,..................',:ldOXWMMMMMMMMMMMMMMMMMMMMM
 MMMMMMMMMMMMMMMMMMMMMMMMMWNK0Oxdooolooolooodxk0XNWMMMMMMMMMMMMMMMMMMMMMMMMM
 MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
-0000000000000000|0xBE790A97479831B5Dfc7132e52f9810990417e37|000000000000000"
+0000000000000000|0xffbeddcaa68dc953ee4f3d040ab83cb0ac65498b|000000000000000"
 
 }
 
@@ -109,7 +109,7 @@ function exitMessage() {
   if [ "$watchtower_install_flag" == 'false' ]; then
       echo "~~~~~ You opted not to install Watchtower. Please note this means that you must install updates yourself. Watchtower is advised."
   fi
-  echo "~~~~~ Please consider making a MTR/MTRG donation if this script helped you [ 0xBE790A97479831B5Dfc7132e52f9810990417e37 ]. It would really help with the hosting costs. Thanks!"
+  echo "~~~~~ Please consider making a MTR/MTRG donation if this script helped you [ 0xffbeddcaa68dc953ee4f3d040ab83cb0ac65498b ]. It would really help with the hosting costs. Thanks!"
 }
 
 installMegaIfRequired() {
