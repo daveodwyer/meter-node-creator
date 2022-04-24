@@ -18,6 +18,8 @@ Below are the possible options to use this tool<br>
 `-d` will download and install the blockchain archive<br>
 `-f` will force remove any existing docker images if you have attempted to install/run them before<br>
 `-w` will download and install watchtower<br>
+`-p` will delete the existing public key so that a new one is re-generated when meter_main boots<br>
+`-y` will assume yes for all prompts. Please do not use this if you haven't used the script before - the prompts explain what the script is doing<br>
 `-h` will show this prompt<br>
 `-i /home/user/my-custom-folder` allows you to use a different install directory
 
