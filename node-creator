@@ -456,11 +456,9 @@ function main() {
 
   # delete the public key if requested - it will be regenerated on boot
   if [ "$regenerate_public_key" == 'true' ]; then
-    echo -e "~~~~~Stopping meter_main before deleting old public key..."
-    docker container stop meter_main
     rm -f "$install_directory"/public.key
-    docker container start meter_main
-    echo -e "~~~~~Starting meter_main..."
+    echo -e "~~~~~Restarting meter_main after deleting old public key..."
+    docker container restart meter_main
   fi
 
   if [ "$watchtower_install_flag" == 'true' ]; then
