@@ -455,7 +455,7 @@ function main() {
   fi
 
   # delete the public key if requested - it will be regenerated on boot
-  if [ "$regenerate_public_key" == 'true']; then
+  if [ "$regenerate_public_key" == 'true' ]; then
     echo -e "~~~~~Stopping meter_main before deleting old public key..."
     docker container stop meter_main
     rm -f "$install_directory"/public.key
