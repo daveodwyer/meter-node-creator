@@ -12,12 +12,18 @@ function declareVars() {
   # if this flag is true we will download  the chain to bootstrap the node installation
   download_chain_flag='false'
 
+  # regenerate the public
+  regenerate_public_key='false'
+
   # if this flag is true we will force remove any related containers that the end user may have attempted to install
   # themselves
   force_removal_flag='false'
 
   # if this flag is true we will download and install the watchtower container
   watchtower_install_flag='false'
+
+  # force Y response to all messages
+  assume_yes='false'
 
   # yes and no options accepted at keyboard prompts
   yes_option="y"
@@ -257,9 +263,9 @@ function main() {
 
   declareVars
 
-  # this string contains the text that will output to the end user before they confirm their choices
+  # this string contains the text that will output to the end user before they confirm their choices (if y is not set)
   message_for_output=""
-  while getopts 'dfwhi:m:' flag; do
+  while getopts 'dfwhpyi:m:' flag; do
     case "${flag}" in
       h)
         outputHelpText
@@ -281,6 +287,16 @@ function main() {
       f)
         message_for_output="${message_for_output} ~opted to force remove any container that has already been installed with the name meter_main\n"
         force_removal_flag='true'
+      ;;
+
+      p)
+        message_for_output="${message_for_output} ~opted to regenerate the public key\n"
+        regenerate_public_key='true'
+      ;;
+
+      y)
+        message_for_output="${message_for_output} ~opted to accept all messages automatically\n"
+        assume_yes='true'
       ;;
 
       w) message_for_output="${message_for_output} ~opted to install watchtower that will manage updates for you\n"
@@ -312,17 +328,19 @@ function main() {
 
   echo -e "${message_for_output}"
 
-  mainmenuinput=""
-  echo Enter Y to continue:
-  while [[ ( $(echo ${mainmenuinput,,} | xargs) != ${yes_option} && $(echo ${mainmenuinput,,} | xargs) != ${no_option} ) ]]; do
-    read -n 1 mainmenuinput
-  done
+  if [ "$assume_yes" == 'false' ]; then
+    mainmenuinput=""
+    echo Enter Y to continue:
+    while [[ ( $(echo ${mainmenuinput,,} | xargs) != ${yes_option} && $(echo ${mainmenuinput,,} | xargs) != ${no_option} ) ]]; do
+      read -n 1 mainmenuinput
+    done
 
-  if [ ${mainmenuinput,,} = ${yes_option} ]; then
-      echo -e "\n~BEGINNING"
-  else
-    echo -e "\nDid not confirm. Exiting"
-    exit
+    if [ ${mainmenuinput,,} = ${yes_option} ]; then
+        echo -e "\n~BEGINNING"
+    else
+      echo -e "\nDid not confirm. Exiting"
+      exit
+    fi
   fi
 
   #groups
@@ -346,11 +364,16 @@ function main() {
     echo "~Because this script is designed to be run directly from GitHub, the safest"
     echo "~way to do that is to restart the machine. When the machine reboots simply rerun the same command."
     echo "~Are you happy to restart now??"
-    restartconfirmation=""
-    echo Enter Y to continue:
-    while [[ ( $(echo ${restartconfirmation,,} | xargs) != ${yes_option} && $(echo ${restartconfirmation,,} | xargs) != ${no_option} ) ]]; do
-      read -n 1 restartconfirmation
-    done
+
+    if [ "$assume_yes" == 'false' ]; then
+      restartconfirmation=""
+      echo Enter Y to continue:
+      while [[ ( $(echo ${restartconfirmation,,} | xargs) != ${yes_option} && $(echo ${restartconfirmation,,} | xargs) != ${no_option} ) ]]; do
+        read -n 1 restartconfirmation
+      done
+    else
+      restartconfirmation="y"
+    fi
 
     if [ ${restartconfirmation,,} = ${yes_option} ]; then
       echo -e "\n~~~~~Restarting now"
@@ -429,6 +452,13 @@ function main() {
   else
     echo -e "~~~~~Starting meter_main docker container"
     docker run --network host --name meter_main --restart always -e NETWORK="main" -v $METER_MAIN_DATA_PATH:/pos -d meterio/mainnet:latest
+  fi
+
+  # delete the public key if requested - it will be regenerated on boot
+  if [ "$regenerate_public_key" == 'true' ]; then
+    rm -f "$install_directory"/public.key
+    echo -e "~~~~~Restarting meter_main after deleting old public key..."
+    docker container restart meter_main
   fi
 
   if [ "$watchtower_install_flag" == 'true' ]; then
