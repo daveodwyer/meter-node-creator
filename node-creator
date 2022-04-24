@@ -372,7 +372,7 @@ function main() {
         read -n 1 restartconfirmation
       done
     else
-      $restartconfirmation = ${yes_option}
+      restartconfirmation = ${yes_option}
     fi
 
     if [ ${restartconfirmation,,} = ${yes_option} ]; then
