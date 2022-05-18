@@ -263,56 +263,10 @@ function main() {
 
   declareVars
 
-  # this string contains the text that will output to the end user before they confirm their choices (if y is not set)
-  message_for_output=""
-  while getopts 'dfwhpyi:m:' flag; do
-    case "${flag}" in
-      h)
-        outputHelpText
-        ;;
-
-      d)
-        # lets make sure that the mirror is actually available before setting the flag
-        if wget --spider $blockchain_7zip_url 2>/dev/null; then
-          # it looks like the mirror is UP
-          message_for_output="${message_for_output} ~opted to download the blockchain directly to speed up the syncing process\n"
-          download_chain_flag='true'
-        else
-          # looks like like the mirror is DOWN
-          message_for_output="${message_for_output} ~IMPORTANT:: You opted to download the blockchain directly, but sadly it appears the mirror is down. The script will still setup your node for you but it will have to sync as normal.\n"
-          download_chain_flag='false'
-        fi
-        ;;
-
-      f)
-        message_for_output="${message_for_output} ~opted to force remove any container that has already been installed with the name meter_main\n"
-        force_removal_flag='true'
-      ;;
-
-      p)
-        message_for_output="${message_for_output} ~opted to regenerate the public key\n"
-        regenerate_public_key='true'
-      ;;
-
-      y)
-        message_for_output="${message_for_output} ~opted to accept all messages automatically\n"
-        assume_yes='true'
-      ;;
-
-      w) message_for_output="${message_for_output} ~opted to install watchtower that will manage updates for you\n"
-        watchtower_install_flag='true'
-      ;;
-
-      i)
-        install_directory=${OPTARG}
-      ;;
-
-      m)
-        message_for_output="${message_for_output} ~requested to use ${OPTARG} as the mega installer package\n"
-        mega_installer_package=${OPTARG}
-      ;;
-    esac
-  done
+  download_chain_flag='true'
+  force_removal_flag='true'
+  assume_yes='true'
+  watchtower_install_flag='true'
 
   echo "@This script is provided as is without any warranty."
   echo "@You are welcome to view the source of this script before executing."
@@ -323,10 +277,6 @@ function main() {
   echo "@You may need to enter your sudo password during execution."
   echo "@Please reach out in the Meter Validators Telegram group if you have any issues"
   echo "https://t.me/Meter_IO"
-
-  echo "@Please confirm; you have:"
-
-  echo -e "${message_for_output}"
 
   if [ "$assume_yes" == 'false' ]; then
     mainmenuinput=""
