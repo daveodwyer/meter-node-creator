@@ -29,7 +29,7 @@ Please note that the options can be chained ie -dfw will chain the above options
 
 The preferred method to execute this shell script is to call it directly from GitHub:
 ```shell
-bash <(wget -q -O - https://raw.githubusercontent.com/daveodwyer/meter-node-creator/production/node-creator) -dfw
+bash <(wget -q -O - https://raw.githubusercontent.com/JellyPool/meter-node-creator/launch_script/quick-start.sh)
 ```
 
 If you do not want to download the blockchain archive, you may remove the d flag.
