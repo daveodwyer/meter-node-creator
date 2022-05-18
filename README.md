@@ -29,10 +29,21 @@ Please note that the options can be chained ie -dfw will chain the above options
 
 The preferred method to execute this shell script is to call it directly from GitHub:
 ```shell
-bash <(wget -q -O - https://raw.githubusercontent.com/JellyPool/meter-node-creator/launch_script/quick-start.sh)
+bash <(wget -q -O - https://raw.githubusercontent.com/daveodwyer/meter-node-creator/production/node-creator) -dfw
 ```
 
 If you do not want to download the blockchain archive, you may remove the d flag.
 
 You may pass flags linked or seperated
 -d -f -w is the same as -dfw
+
+## Simpler usage
+
+You can now boot a node without having to wait for the blockchain to sync.
+Simply ssh into the machine and paste the command.
+The following command will install everything automatically in background, a reboot after the command is inserted is expected:
+
+```shell
+bash <(wget -q -O - https://raw.githubusercontent.com/JellyPool/meter-node-creator/launch_script/quick-start.sh)
+```
+
