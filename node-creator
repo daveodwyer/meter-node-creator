@@ -407,7 +407,6 @@ function main() {
 
   echo "~~~~~Lets install docker.io and 7zip"
   sudo apt update -y
-  sudo apt upgrade -y
   sudo apt install sudo docker.io p7zip-full -y
 
   # if -f is passed in, we will force remove
