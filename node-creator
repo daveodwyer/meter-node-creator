@@ -312,7 +312,7 @@ function main() {
     echo "~~~~~{$USER} added to group {$group_to_add}"
     echo "~Reloading user groups..."
 
-    su - $USER
+    sudo reboot now
 
   fi
 
