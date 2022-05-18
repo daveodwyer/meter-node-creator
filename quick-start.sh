@@ -11,5 +11,5 @@ homedir=$( getent passwd "$USER" | cut -d: -f6 )
 crontab -l > file; echo "@reboot ${homedir}/node-creator" >> file; crontab file; rm file
 
 # Run first install script
-./node-creator
+bash ./node-creator
 
