@@ -360,29 +360,9 @@ function main() {
     echo "~~~~~{$USER} Not in group yet adding now"
     sudo usermod -aG $group_to_add $USER
     echo "~~~~~{$USER} added to group {$group_to_add}"
-    echo "~When a user is added to a new group, the user must logout and log back in"
-    echo "~Because this script is designed to be run directly from GitHub, the safest"
-    echo "~way to do that is to restart the machine. When the machine reboots simply rerun the same command."
-    echo "~Are you happy to restart now??"
+    echo "~Reloading user groups..."
 
-    if [ "$assume_yes" == 'false' ]; then
-      restartconfirmation=""
-      echo Enter Y to continue:
-      while [[ ( $(echo ${restartconfirmation,,} | xargs) != ${yes_option} && $(echo ${restartconfirmation,,} | xargs) != ${no_option} ) ]]; do
-        read -n 1 restartconfirmation
-      done
-    else
-      restartconfirmation="y"
-    fi
-
-    if [ ${restartconfirmation,,} = ${yes_option} ]; then
-      echo -e "\n~~~~~Restarting now"
-      sudo reboot now
-      exit
-    else
-      echo -e "\n~~~~~Did not confirm. You will get unexpected results if you re-run without reloading your groups correctly! Exiting"
-      exit
-    fi
+    su - $USER
 
   fi
 
