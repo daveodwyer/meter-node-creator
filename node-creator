@@ -258,6 +258,19 @@ function bootstrapChain() {
 function main() {
   local flag
 
+  # check if screen is installed
+  SCREEN_INSTALLED=$(screen -h)
+  if [ "$?" -ne 1 ]; then
+    sudo apt install screen
+  fi
+
+  # check if the script is running in a screen and if not, trigger it
+  if [ -z "$STY" ]; then
+    screen -dm -R -S meter-node-creator
+    screen -S meter-node-creator -X exec "$0";
+    exit
+  fi
+
   # output the ASCII art
   outputAscii
 
