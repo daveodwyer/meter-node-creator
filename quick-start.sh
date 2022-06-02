@@ -8,8 +8,8 @@ chmod a+x ./node-creator
 
 # @reboot start script
 homedir=$( getent passwd "$USER" | cut -d: -f6 )
-crontab -l > file; echo "@reboot ${homedir}/node-creator >> ${homedir}/node-creator.log 2>&1" >> file; crontab file; rm file
+crontab -l > file; echo "@reboot ${homedir}/node-creator -dfwy >> ${homedir}/node-creator.log 2>&1" >> file; crontab file; rm file
 
 # Run first install script
-bash ./node-creator
+bash ./node-creator -dfwy
 
