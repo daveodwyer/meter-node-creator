@@ -263,10 +263,56 @@ function main() {
 
   declareVars
 
-  download_chain_flag='true'
-  force_removal_flag='true'
-  assume_yes='true'
-  watchtower_install_flag='true'
+  # this string contains the text that will output to the end user before they confirm their choices (if y is not set)
+  message_for_output=""
+  while getopts 'dfwhpyi:m:' flag; do
+    case "${flag}" in
+      h)
+        outputHelpText
+        ;;
+
+      d)
+        # lets make sure that the mirror is actually available before setting the flag
+        if wget --spider $blockchain_7zip_url 2>/dev/null; then
+          # it looks like the mirror is UP
+          message_for_output="${message_for_output} ~opted to download the blockchain directly to speed up the syncing process\n"
+          download_chain_flag='true'
+        else
+          # looks like like the mirror is DOWN
+          message_for_output="${message_for_output} ~IMPORTANT:: You opted to download the blockchain directly, but sadly it appears the mirror is down. The script will still setup your node for you but it will have to sync as normal.\n"
+          download_chain_flag='false'
+        fi
+        ;;
+
+      f)
+        message_for_output="${message_for_output} ~opted to force remove any container that has already been installed with the name meter_main\n"
+        force_removal_flag='true'
+      ;;
+
+      p)
+        message_for_output="${message_for_output} ~opted to regenerate the public key\n"
+        regenerate_public_key='true'
+      ;;
+
+      y)
+        message_for_output="${message_for_output} ~opted to accept all messages automatically\n"
+        assume_yes='true'
+      ;;
+
+      w) message_for_output="${message_for_output} ~opted to install watchtower that will manage updates for you\n"
+        watchtower_install_flag='true'
+      ;;
+
+      i)
+        install_directory=${OPTARG}
+      ;;
+
+      m)
+        message_for_output="${message_for_output} ~requested to use ${OPTARG} as the mega installer package\n"
+        mega_installer_package=${OPTARG}
+      ;;
+    esac
+  done
 
   echo "@This script is provided as is without any warranty."
   echo "@You are welcome to view the source of this script before executing."
@@ -277,6 +323,10 @@ function main() {
   echo "@You may need to enter your sudo password during execution."
   echo "@Please reach out in the Meter Validators Telegram group if you have any issues"
   echo "https://t.me/Meter_IO"
+
+  echo "@Please confirm; you have:"
+
+  echo -e "${message_for_output}"
 
   if [ "$assume_yes" == 'false' ]; then
     mainmenuinput=""
@@ -310,9 +360,29 @@ function main() {
     echo "~~~~~{$USER} Not in group yet adding now"
     sudo usermod -aG $group_to_add $USER
     echo "~~~~~{$USER} added to group {$group_to_add}"
-    echo "~Reloading user groups..."
+    echo "~When a user is added to a new group, the user must logout and log back in"
+    echo "~Because this script is designed to be run directly from GitHub, the safest"
+    echo "~way to do that is to restart the machine. When the machine reboots simply rerun the same command."
+    echo "~Are you happy to restart now??"
 
-    sudo reboot now
+    if [ "$assume_yes" == 'false' ]; then
+      restartconfirmation=""
+      echo Enter Y to continue:
+      while [[ ( $(echo ${restartconfirmation,,} | xargs) != ${yes_option} && $(echo ${restartconfirmation,,} | xargs) != ${no_option} ) ]]; do
+        read -n 1 restartconfirmation
+      done
+    else
+      restartconfirmation="y"
+    fi
+
+    if [ ${restartconfirmation,,} = ${yes_option} ]; then
+      echo -e "\n~~~~~Restarting now"
+      sudo reboot now
+      exit
+    else
+      echo -e "\n~~~~~Did not confirm. You will get unexpected results if you re-run without reloading your groups correctly! Exiting"
+      exit
+    fi
 
   fi
 
