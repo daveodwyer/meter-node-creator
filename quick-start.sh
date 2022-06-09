@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Download the node-creator script
-wget https://raw.githubusercontent.com/daveodwyer/meter-node-creator/launch_script/node-creator
+wget https://raw.githubusercontent.com/JellyPool/meter-node-creator/production/quick-start.sh
 
 # Make it executable
 chmod a+x ./node-creator
