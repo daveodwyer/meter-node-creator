@@ -47,7 +47,7 @@ It is not required that you keep the ssh session opened.
 
 SSH into the server and paste the following command in your home directory:
 ```shell
-bash <(wget -q -O - https://raw.githubusercontent.com/daveodwyer/meter-node-creator/launch_script/quick-start.sh)
+bash <(wget -q -O - https://raw.githubusercontent.com/daveodwyer/meter-node-creator/production/quick-start.sh)
 ```
 
 ### How to check progress for the Simpler usage
