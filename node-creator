@@ -137,14 +137,14 @@ installMegaIfRequired() {
 
     if [ "$VERSION_CODENAME" == "bionic" ]; then
       # 18.04
-      deb="https://mega.nz/linux/MEGAsync/xUbuntu_18.04/amd64/megacmd_1.4.0-6.1_amd64.deb"
+      deb="https://mega.nz/linux/MEGAsync/xUbuntu_18.04/amd64/megacmd_1.5.1-1.1_amd64.deb"
     elif [ "$VERSION_CODENAME" == "focal" ]; then
       # 20.04
-      deb="https://mega.nz/linux/MEGAsync/xUbuntu_20.04/amd64/megacmd_1.4.0-5.1_amd64.deb"
+      deb="https://mega.nz/linux/MEGAsync/xUbuntu_20.04/amd64/megacmd_1.5.1-1.1_amd64.deb"
     elif [ "$VERSION_CODENAME" == "bullseye" ]; then
-      deb="https://mega.nz/linux/MEGAsync/Debian_11/amd64/megacmd_1.4.0-3.1_amd64.deb"
+      deb="https://mega.nz/linux/MEGAsync/Debian_11/amd64/megacmd_1.5.1-1.1_amd64.deb"
     elif [ "$VERSION_CODENAME" == "buster" ]; then
-      deb="https://mega.nz/linux/MEGAsync/Debian_10.0/amd64/megacmd_1.4.0-3.1_amd64.deb"
+      deb="https://mega.nz/linux/MEGAsync/Debian_10.0/amd64/megacmd_1.5.1-1.1_amd64.deb"
     else
       return 0
     fi
