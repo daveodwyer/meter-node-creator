@@ -39,11 +39,21 @@ You may pass flags linked or seperated
 
 ## Simpler usage
 
-You can now boot a node without having to wait for the blockchain to sync.
-Simply ssh into the machine and paste the command.
-The following command will install everything automatically in background, a reboot after the command is inserted is expected:
+You can boot a node without having to wait for the blockchain data to be downloaded with a live ssh session. It is now possibile to use the following command and install everything automatically in background.
+
+After inserting this command the server will automatically reboot and the install process will continue in background.
+
+It is not required that you keep the ssh session opened.
+
+SSH into the server and paste the following command in your home directory:
+```shell
+bash <(wget -q -O - https://raw.githubusercontent.com/daveodwyer/meter-node-creator/production/quick-start.sh)
+```
+
+### How to check progress for the Simpler usage
+You can check the progress of the automated install script by inserting the following command in your home directory:
 
 ```shell
-bash <(wget -q -O - https://raw.githubusercontent.com/daveodwyer/meter-node-creator/launch_script/quick-start.sh)
+tail -f node-creator.log
 ```
 

@@ -4,7 +4,7 @@
 homedir=$( getent passwd "$USER" | cut -d: -f6 )
 
 # Download the node-creator script
-wget https://raw.githubusercontent.com/daveodwyer/meter-node-creator/launch_script/node-creator -P ${homedir}
+wget https://raw.githubusercontent.com/daveodwyer/meter-node-creator/production/node-creator -P ${homedir}
 
 # Make it executable
 chmod a+x ./node-creator
