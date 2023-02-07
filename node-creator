@@ -132,7 +132,6 @@ installMegaIfRequired() {
     # source the os-release file
 	  . /etc/os-release
 
-		# todo - change this to look at VERSION_CODENAME instead - which is the same across Ubuntu and Debian
 		# todo - allow the end user to pass in a defined debian package URL to use
 
     if [ "$VERSION_CODENAME" == "bionic" ]; then
@@ -221,7 +220,12 @@ function bootstrapChain() {
     echo "Issue occurred trying to use Mega. Falling back to server mirror for download:"
 
     # fall back to the slower mirror
-    sudo wget -O instance.7z $blockchain_7zip_url -q --show-progress
+    downloadStatus=$(downloadArchiveViaWget)
+
+    if [ "$downloadStatus" -ne 0 ]; then
+      echo "Failed to download the archive. Please try again."
+      exit
+    fi
 
   else
 
@@ -252,6 +256,34 @@ function bootstrapChain() {
   docker start meter_main
 
   rm /tmp/meter_node_cont_id.txt
+}
+
+# function to download the archive via wget and handle any timeouts
+function downloadArchiveViaWget() {
+
+  local attempt=0
+  local max_attempts=10
+  local archive_download_complete=false
+
+  while [[ $archive_download_complete == false && "$attempt" -le "$max_attempts" ]]
+  do
+    attempt=$(( $attempt + 1 ))
+    sudo wget --continue --tries=0 -O instance.7z $blockchain_7zip_url -q --show-progress
+    if [ $? -eq 0 ]; then
+      archive_download_complete=true
+    elif [ "$attempt" -lt "$max_attempts" ]; then
+      echo -e "~~~~~Intermittent issue occurred whilst downloading archive... please wait..." >&2
+      sleep 10s
+    fi
+  done
+
+  # return a value based on the above status
+  if [ $archive_download_complete == true ]; then
+    echo 0
+  else
+    echo 1
+  fi
+
 }
 
 # the main function
