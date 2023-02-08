@@ -262,7 +262,7 @@ function bootstrapChain() {
 function downloadArchiveViaWget() {
 
   local attempt=0
-  local max_attempts=10
+  local max_attempts=100
   local archive_download_complete=false
 
   while [[ $archive_download_complete == false && "$attempt" -le "$max_attempts" ]]
@@ -273,7 +273,7 @@ function downloadArchiveViaWget() {
       archive_download_complete=true
     elif [ "$attempt" -lt "$max_attempts" ]; then
       echo -e "~~~~~Intermittent issue occurred whilst downloading archive... please wait..." >&2
-      sleep 10s
+      sleep 30s
     fi
   done
 
